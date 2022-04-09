@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const Recipe = require('./models/Recipe.model');
 // Import of the data from './data.json'
 const data = require('./data');
+const { modelName } = require('./models/Recipe.model');
 
 const MONGODB_URI = 'mongodb://localhost:27017/recipe-app';
 
@@ -15,29 +16,61 @@ mongoose
     // Before adding any recipes to the database, let's remove all existing ones
     return Recipe.deleteMany();
   })
+
+  //.then(() => {
+  //  return Recipe.create({
+  //    title: 'glutenfree Chocolate Chip Cookies',
+  //    level: 'UltraPro Chef',
+  //    ingredients: [
+  //      '1/2 cup light brown sugar',
+  //      '1 large egg',
+  //      '2 tablespoons milk',
+  //      '1 1/4 teaspoons vanilla extract',
+  //      '2 cups semisweet chocolate chips',
+  //      '2 cups glutenfree flour'
+  //    ],
+  //    cuisine: 'French',
+  //    dishType: 'dessert',
+  //    image:
+  //      'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fimages.media-allrecipes.com%2Fuserphotos%2F4398987.jpg&w=596&h=399.32000000000005&c=sc&poi=face&q=85',
+  //    duration: 30,
+  //    creator: 'Chef Jennifer'
+  //  });
+  //})
+  //.then((recipe) => {
+  //  console.log(recipe.title);
+  //})
+
   .then(() => {
-    return Recipe.create({
-      title: 'glutenfree Chocolate Chip Cookies',
-      level: 'UltraPro Chef',
-      ingredients: [
-        '1/2 cup light brown sugar',
-        '1 large egg',
-        '2 tablespoons milk',
-        '1 1/4 teaspoons vanilla extract',
-        '2 cups semisweet chocolate chips',
-        '2 cups glutenfree flour'
-      ],
-      cuisine: 'French',
-      dishType: 'dessert',
-      image:
-        'https://imagesvc.meredithcorp.io/v3/mm/image?url=https%3A%2F%2Fimages.media-allrecipes.com%2Fuserphotos%2F4398987.jpg&w=596&h=399.32000000000005&c=sc&poi=face&q=85',
-      duration: 30,
-      creator: 'Chef Jennifer'
-    });
+    return Recipe.insertMany(data);
   })
-  .then((recipe) => {
-    console.log(recipe.title);
+
+  //.then((recipes) => {
+  //  recipes.forEach((recipe) => {
+  //    console.log(recipe.title);
+  //  });
+  //})
+
+  .then(() => {
+    const updatedRecipe = { title: 'Rigatoni alla Genovese' };
+    return Recipe.findOneAndUpdate(updatedRecipe, { duration: 100 });
+  })
+  .then((query) => {
+    console.log('Updated!');
+    return query;
+  })
+  .then(() => {
+    const deletedRecipe = { title: 'Carrot Cake' };
+    return Recipe.deleteOne(deletedRecipe);
+  })
+  .then((query) => {
+    console.log('Deleted!');
+    return query;
   })
   .catch((error) => {
     console.error('Error connecting to the database', error);
+  })
+  .then(() => {
+    mongoose.disconnect();
+    console.log('Closed database');
   });
